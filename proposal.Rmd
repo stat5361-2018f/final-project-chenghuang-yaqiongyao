@@ -11,7 +11,7 @@ output:
 
 ## Motivation
 
-The motivation of this project is to improve the process of drawing samples for bootstrap purpose. since when doing bootstrap, we only have a set of sample data instead of the density function of the random variable. Then how to draw random numbers from the unknow distribution becomes a problem. In this project, we are going to investigate two methods. The first one is to use empirical cumulative distribution. Randomly generate numbers between 0 and 1 and then map them to certain values by the empirical cumulative distirbuiton. The second one is to use kernel density estimate, where we can obtain the smoothed CDF for this unknow distribution.
+The motivation of this project is to improve the process of drawing samples for bootstrap purpose. Since when doing bootstrap, we only have a set of sample data instead of the density function of the random variable. Then how to draw random numbers from the unknow distribution becomes a problem. In this project, we are going to investigate two methods. The first one is to use empirical cumulative distribution. Randomly generate numbers between 0 and 1 and then map them to certain values by the empirical cumulative distirbuiton. The second one is to use kernel density estimate, where we can obtain the smoothed CDF for this unknow distribution.
 
 
 <!-- Instead of using the empirical distribution function, which is a step function, we explore algorithms to draw sample from kernel density distributions, the smoothed version. Therefore when draw samples for bootstrap, the sample does not have to be a subset of the observations. -->
@@ -19,7 +19,7 @@ The motivation of this project is to improve the process of drawing samples for 
 
 ## Methodology
 
-The idea of drawing samples from kernel density estimate is inspired by the website.\footnote{\url{https://stats.stackexchange.com/questions/321542/how-can-i-draw-a-value-randomly-from-a-kernel-density-estimate/321726}}. It gives us a naive implementation of generating random values from univariate distribution. The principle of this method is first to randomly select values from certain kernel density and then draw samples from data we have. Adding these two parts together forms what we want. It also provides a dentailed proof of this method in the website. In our project, we are going to use same idea and extend it to the bivarite case.
+The idea of drawing samples from kernel density estimate is inspired by the website.\footnote{\url{https://stats.stackexchange.com/questions/321542/how-can-i-draw-a-value-randomly-from-a-kernel-density-estimate/321726}}. It gives us a naive implementation of generating random values from univariate distribution. The principle of this method is first to randomly select values from certain kernel density and then draw samples from data we have. Adding these two parts together forms what we want. It also provides a detailed proof in the website. In our project, we are going to use same idea and extend it to the case with two random variables linked by copula.
 
 
 ## Simulate from copula
@@ -28,13 +28,13 @@ Suppose we have two random variables $X$ and $Y$. Their dependency is defined by
 
 $$ F(x, y) = C(F_x(x), F_y(y)),$$
 
-where $F_x(\cdot)$ and $F_y(\cdot)$ is the marginal cumulative distribution of $X$ and $Y$. Based on the copula, we can randomly select $(U_x, U_y)$, where $U_x = F_x(x)$ and $U_y = F_y(y)$. Then, by mapping the samples onto the empirical cumulative distribution function, one could easily generate sample from a specific distribution. The second method is to construct a kernel density estimation (KDE) for the sample drawed. It could be created by selecting kernel densities functions like Normal, Uniform. We can also express the cumulative distribution of KDE explicitly
+where $F_x(\cdot)$ and $F_y(\cdot)$ is the marginal cumulative distribution of $X$ and $Y$. Based on the copula, we can randomly select $(U_x, U_y)$, where $U_x = F_x(x)$ and $U_y = F_y(y)$. Then, by mapping the samples onto the empirical cumulative distribution function, one could easily generate sample from a specific distribution. And the second method is to construct a kernel density estimation (KDE) for the sample drawed. It could be created by first selecting kernel densities functions like Normal. We can also express the cumulative distribution of KDE explicitly
 
 \begin{equation}\label{eq:cdf_kde}
-\hat{F}_h = \sum_{i=1}^n \alpha_i \Phi(\frac{x-x_i}{b}),
+\hat{F}_h(x) = \sum_{i=1}^n \frac{1}{nb} \Phi(\frac{x-x_i}{b}),
 \end{equation}
 
-where $n$ is the number of sample points we have, $b$ is the bandwidth. Base on the \ref{eq:cdf_kde}, we can also acquire a closed form solution.
+where $n$ is the number of sample points we have, $b$ is the bandwidth and $\Phi$ is the CDF of standard normal distribution. Base on the \ref{eq:cdf_kde}, we can also acquire a closed form solution.
 
 
 
