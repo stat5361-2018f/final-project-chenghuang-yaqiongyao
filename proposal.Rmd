@@ -31,7 +31,7 @@ $$ F(x, y) = C(F_x(x), F_y(y)),$$
 where $F_x(\cdot)$ and $F_y(\cdot)$ is the marginal cumulative distribution of $X$ and $Y$. Based on the copula, we can randomly select $(U_x, U_y)$, where $U_x = F_x(x)$ and $U_y = F_y(y)$. Then, by mapping the samples onto the empirical cumulative distribution function, one could easily generate sample from a specific distribution. And the second method is to construct a kernel density estimation (KDE) for the sample drawed. It could be created by first selecting kernel densities functions like Normal. We can also express the cumulative distribution of KDE explicitly
 
 \begin{equation}\label{eq:cdf_kde}
-\hat{F}_h(x) = \sum_{i=1}^n \frac{1}{nb} \Phi(\frac{x-x_i}{b}),
+\hat{F}_h(x) = \sum_{i=1}^n \frac{1}{n} \Phi(\frac{x-x_i}{b}),
 \end{equation}
 
 where $n$ is the number of sample points we have, $b$ is the bandwidth and $\Phi$ is the CDF of standard normal distribution. Base on the \ref{eq:cdf_kde}, we can also acquire a closed form solution.
