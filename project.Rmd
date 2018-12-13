@@ -5,7 +5,7 @@ date: "11/24/2018"
 output: pdf_document
 ---
 
-
+######
 
 
 # Numerical simulation
