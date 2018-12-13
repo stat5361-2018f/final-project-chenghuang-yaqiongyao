@@ -8,7 +8,11 @@ output:
     df_print: paged
 ---
 
+<<<<<<< HEAD
 <!--- cheng test-->
+=======
+######
+>>>>>>> 3bd30dee5d90660bb708f230aac27436276811de
 
 
 # Numerical simulation
