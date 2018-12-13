@@ -4,6 +4,7 @@
 
 
 ## univariate
+## generate data
 n <- 100
 set.seed(123)
 u <- runif(100, 0, 1)
@@ -16,9 +17,53 @@ true.density <- function(x){
   0.3 * dgamma(x, shape = 1, scale = 5) + 0.7 * dgamma(x, shape = 5, scale = 1)
 }
 
-hist(x, breaks = 50)
+hist(x, breaks = 50, probability = TRUE)
 curve(true.density(x), add = TRUE)
 
+
+## empirical CDF with kernel function
+N <- 100   # number of samples
+
+find.int.point <- function(x){
+  y <- sort(x)
+  bw <- density(x)$bw
+  interval <- cbind(y-bw/2, y+bw/2)
+  int.point <- NULL
+  for (i in 1:dim(interval)[1]) {
+    num.s <- sum((interval[1:i, 1] <= interval[i, 1]) & 
+                   (interval[1:i, 2] >= interval[i, 1]))
+    num.e <- sum((interval[(i):dim(interval)[1], 1] <= interval[i, 2]) & 
+                   (interval[(i):dim(interval)[1], 2] >= interval[i, 2])) - 1
+    num.m <- matrix(c(interval[i, 1], interval[i, 2], num.s, num.e), nrow = 2)
+    int.point <- rbind(int.point, num.m)
+  }
+  int.point <- int.point[order(int.point[,1]),]
+  sum((int.point[2:dim(int.point)[1], 1] - int.point[1:(dim(int.point)[1]-1),1])*
+        int.point[1:(dim(int.point)[1]-1), 2]*(1/bw)) == 100
+  int.point <- cbind(int.point, c((int.point[2:dim(int.point)[1], 1] - int.point[1:(dim(int.point)[1]-1),1])*
+                                    int.point[1:(dim(int.point)[1]-1), 2]*(1/bw)*(1/length(x)), 0))
+  int.point <- cbind(int.point, c(0,cumsum(int.point[,3])[-dim(int.point)[1]]))
+  return(int.point)
+}
+
+sample.int <- function(int.point, u){
+  num.int <- sapply(1:length(u), function(i) sum(int.point[,4] < u[i]))
+  sample <- int.point[num.int, 1] + (u - int.point[num.int, 4])/(int.point[num.int, 2]*(1/bw))
+  return(sample)
+}
+
+sample.kernel <- function(x, u){
+  sample.int(find.int.point(x), u)
+}
+
+N <- 10000
+set.seed(123)
+u <- runif(N, 0, 1)
+hist(u)
+sample <- sample.kernel(x, u)
+hist(sample, breaks = 20, probability = TRUE)
+lines(density(sample), col = "blue")
+lines(density(x), col = "red")
 
 
 
