@@ -2,7 +2,10 @@
 title: "project"
 author: "Yaqiong Yao"
 date: "11/24/2018"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ######
@@ -28,8 +31,8 @@ Obviouly, no explicity closed form of $x$, either.
 
 ## Bivariate case
 
-Suppose we have a gaussian copula with two random variables, one is follow gamma distribution with parameter 1 and 2, and another one is from chi-squared distribution with degree of freedom 1.
-
+Suppose we have a gaussian copula with two random variables, one follows gamma distribution with parameter 1 and 2, and another one is from chi-squared distribution with degree of freedom 10.
+The first method is mapping the cumulative probabilities from the generated gaussian copula with the quantiles of gamma and chi-square distribution respectively.
 ```{r}
 require(mvtnorm)
 n <- 100
@@ -41,7 +44,7 @@ x <- qgamma(dat[,1], shape = 1, scale = 2)
 y <- qchisq(dat[,2], df = 10)
 plot(x, y)
 ```
-
+The second method is generate random numbers use the empirical cdf of last method and resampling from the samples of last method.
 ```{r}
 ## generate random number with empirical cdf
 n <- 1000
@@ -58,6 +61,17 @@ plot(x, y, xlim = c(0, 15), ylim = c(0, 35))
 plot(x_ecdf, y_ecdf, xlim = c(0, 15), ylim = c(0, 35))
 
 ```
+The Third method is using kernel density estimator(KDE). To draw a value from the kernel density estimate: (1) draw a value from the kernel density Y; (2) independently select one of the data points at random X. Adding X and Y gives the value of the sample point.\
+Consider X is draw from the empirical distribution of data $(x_1, x_2, ..., x_n)$, Y is from kernel $U(0, 1)$. Therefore,
+\begin{align}
+  F_{X+Y}(x) 
+  &= Pr(X+Y \le x) \\
+  &= \sum_{i=1}^{n}Pr(X+Y \le x |X = x_i)Pr(X=X_i) \\
+  &= \sum_{i=1}^{n}Pr(x_i+Y \le x)Pr(X=X_i) \\
+  &= \frac{1}{n}\sum_{i=1}^{n}Pr(Y \le x - xi)\\
+  &= \frac{1}{n}\sum_{i=1}^{n}F_K(x-x_i)
+\end{align}
+coincide with the CDF of the KDE.
 
 ```{r}
 ## generate random number from KDE
