@@ -3,65 +3,22 @@
 #####################################################################
 
 
-
-## univariate example
-
+## univariate
 n <- 100
-set.seed(17)
-x <- c(rnorm(n), rnorm(n, 4, 1/4), rnorm(n, 8, 1/4))
+set.seed(123)
+u <- runif(100, 0, 1)
+x <- as.numeric(u < 0.3) * rgamma(100, shape = 1, scale = 5) + 
+  as.numeric(u > 0.3) * rgamma(100, shape = 5, scale = 1)
+hist(x, breaks = 50)
+plot(density(x))
 
-hist(x)
-
-
-rdens <- function(n, density=z, data=x, kernel="gaussian") {
-  width <- z$bw                              # Kernel width
-  rkernel <- function(n) runif(n, -width, width)  # Kernel sampler
-  sample(x, n, replace=TRUE) + rkernel(n)    # Here's the entire algorithm
+true.density <- function(x){
+  0.3 * dgamma(x, shape = 1, scale = 5) + 0.7 * dgamma(x, shape = 5, scale = 1)
 }
 
-dx <- function(x) (dnorm(x) + dnorm(x, 4, 1/4) + dnorm(x, 8, 1/4))/3
-#
-# Compute a kernel density estimate.
-# It returns a kernel width in $bw as well as $x and $y vectors for plotting.
-#
-z <- density(x, bw=0.15, kernel="gaussian")
-#
-# Sample from the KDE.
-#
-system.time(y <- rdens(3*n, z, x)) # Millions per second
-#
-# Plot the sample.
-#
-h.density <- hist(y, breaks=60, plot=FALSE)
-#
-# Plot the KDE for comparison.
-#
-h.sample <- hist(x, breaks=h.density$breaks, plot=FALSE)
-#
-# Display the plots side by side.
-#
-histograms <- list(Sample=h.sample, Density=h.density)
-y.max <- max(h.density$density) * 1.25
-par(mfrow=c(1,2))
-for (s in names(histograms)) {
-  h <- histograms[[s]]
-  plot(h, freq=FALSE, ylim=c(0, y.max), col="#f0f0f0", border="Gray",
-       main=paste("Histogram of", s))
-  curve(dx(x), add=TRUE, col="Black", lwd=2, n=501) # Underlying distribution
-  lines(z$x, z$y, col="Red", lwd=2)                 # KDE of data
-  
-}
-par(mfrow=c(1,1))
+hist(x, breaks = 50)
+curve(true.density(x), add = TRUE)
 
-
-
-
-
-
-
-
-# use close form
-# cannot use close form
 
 
 
@@ -115,28 +72,6 @@ plot(x, y, xlim = c(0, 15), ylim = c(0, 35))
 plot(x_ecdf, y_ecdf, xlim = c(0, 15), ylim = c(0, 35))
 plot(xy_kde[,1], xy_kde[,2], xlim = c(0, 15), ylim = c(0, 35))
 
-## use close form solution of uniform kernel
-
-# sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-# set.seed(456)
-# dat <- rmvnorm(n, sigma = sigma)
-# dat <- pnorm(dat)
-# 
-# adj <- 1
-# ind <- sample(1:100, n, replace = TRUE)
-# bw_x <- adj * density(x)$bw
-# bw_y <- adj * density(y)$bw
-# x_kde_c <- (2*n*bw_x*dat[,1] - n*bw_x)/n + x[ind]
-# y_kde_c <- (2*n*bw_y*dat[,2] - n*bw_y)/n + y[ind]
-
-
-
-
-# par(mfrow = c(2,2))
-# plot(x, y, xlim = c(0, 15), ylim = c(0, 35))
-# plot(x_ecdf, y_ecdf, xlim = c(0, 15), ylim = c(0, 35))
-# plot(xy_kde[,1], xy_kde[,2], xlim = c(0, 15), ylim = c(0, 35))
-# plot(x_kde_c, y_kde_c, xlim = c(0, 15), ylim = c(0, 35))
 
 
 
