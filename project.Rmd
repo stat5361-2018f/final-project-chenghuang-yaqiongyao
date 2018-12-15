@@ -17,7 +17,13 @@ If we choose uniform kernel, the CDF of KDE should be represented as:
 
 $$F_K(x|\mathcal{D}) = \frac{1}{n}\left(\sum_{i=1}^n\frac{x-x_i+b}{2b} I(x_i-b < x< x_i + b) + \sum_{i=1}^n I(x \ge x_i + b) \right).$$
 
-If we set this equation to be $u$, which is probablity of $x \le X$. We can hardly have the close form solution of $x$. Thus, if the support of $x$ is not $\mathcal{R}$, then no close form can be obtained. Meanwhile, if we select more complicated kernels, such as normal distribution, the CDF of KDE becomes:
+If we set this equation to be $u$, which is probablity of $x \le X$. We can hardly have the close form solution of $x$. Thus, if the support of $x$ is not $\mathcal{R}$, then no close form can be obtained. 
+<!--
+If we select triangular kernel, the CDF is:
+$$F_K(x|\mathcal{D}) = \frac{1}{n}\left(\sum_{i=1}^n\frac{(b -x_i+x)^2}{2b^2} I(x_i-b < x< x_i) +\sum_{i=1}^n ( 1 - \frac{(b -x + x_i)^2}{2b^2}) I(x_i < x< x_i + b) + \sum_{i=1}^n I(x \ge x_i +  b) \right).$$
+-->
+
+Meanwhile, if we select more complicated kernels, such as normal distribution, the CDF of KDE becomes:
 
 $$F_K(x|\mathcal{D}) = \frac{1}{n} \Phi(\frac{x-x_i}{b}).$$
 Obviouly, no explicity closed form of $x$, either.
@@ -40,11 +46,16 @@ dat <- rmvnorm(n, sigma = sigma)
 dat <- pnorm(dat)
 x <- qgamma(dat[,1], shape = 1, scale = 2)
 y <- qchisq(dat[,2], df = 10)
-plot(x, y)
+
+pdf('p1.pdf')
+plot(x, y, main = "generated copulas x ~ Gamma(1,2) y ~ chisq(10)")
+dev.off()
 ```
 The second method is generate random numbers use the empirical cdf of last method and resampling from the samples of last method.
 ```{r}
 ## generate random number with empirical cdf
+
+
 n <- 1000
 sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
 set.seed(456)
@@ -87,6 +98,13 @@ xy_kde <- sample.kernel(n, x, y, adj)
 
 par(mfrow = c(1,2))
 plot(x, y, xlim = c(0, 15), ylim = c(0, 35))
-plot(xy_kde[,1], xy_kde[,2], xlim = c(0, 15), ylim = c(0, 35))
+pdf('p2.pdf')
+plot(xy_kde[,1], xy_kde[,2], xlim = c(0, 12), ylim = c(0, 30), main = "Generate sample using Kernel Density Estimate(KDE), n = 1000", xlab = "x", ylab = "y")
+dev.off()
 ```
+
+# Reference
+http://home.cc.umanitoba.ca/~farhadi/ASPER/Kernel%20Smoothing.pdf \
+https://stats.stackexchange.com/questions/321542/how-can-i-draw-a-value-randomly-from-a-kernel-density-estimate/321726 \
+https://www.r-bloggers.com/copulas-made-easy/ \
 
